@@ -53,7 +53,7 @@ def put_block(img, xbp, ybp, N, M):
             img.putpixel((xoff + xo, y), M[yo][xo])
 
 
-def block_image(img, N=8):
+def block_image(img, N=8, p=4):
     (width, height) = img.size
 
     width_mod = width % N
@@ -63,6 +63,8 @@ def block_image(img, N=8):
     height_mod = height % N
     height_blocks = height // N
     height_bp = (height - height_mod, height_mod)
+
+    window_edge = (2 * p) + 1
 
     #
     # The gist of this:
@@ -105,13 +107,13 @@ def block_image(img, N=8):
 
 
 
-def process_block(oimg, M, spec):
+def process_block(oimg, M):
     # Single Channel: Luminance
-    D = DCT.DCT(M)
-    add_dct_block(D)
-    C = Quantize.quantize(D, Quantize.QBASE_LUM)
-    R = RLC.RLC(C)
-    oimg.write_block_rlc(R)
+    #D = DCT.DCT(M)
+    #add_dct_block(D)
+    #C = Quantize.quantize(D, Quantize.QBASE_LUM)
+    #R = RLC.RLC(C)
+    #oimg.write_block_rlc(R)
 
 
 infile = None
@@ -133,6 +135,6 @@ img = Image.open(infile)
 if not test_image_mode(img):
     img = img.convert('L') # Grayscale
 
-block_image(img)
+block_image(img, N=16, p=7)
 
 sys.exit(0)

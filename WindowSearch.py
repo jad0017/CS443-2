@@ -44,7 +44,7 @@ def WS_odd(imTgt, imRef, md_i, md_j, N, S):
         cRef = search_points(imTgt, imRef, cTgt, CRef, N, S)
         if S == 1:
             break
-        S = (S / 2) + (S & 1) # floor(S / 2)
+        S = (S / 2) + (S & 1) # ceil(S / 2)
     return (cTgt, cRef) # Return the motion vector
 
 
@@ -86,7 +86,7 @@ def WS_even(imTgt, imRef, md_i, md_j, N, S):
         cRef = search_points2(imTgt, imRef, cTgt, CRef, N, S)
         if S == 1:
             break
-        S = (S / 2) + (S & 1) # floor(S / 2)
+        S = (S / 2) + (S & 1) # ceil(S / 2)
     return (cTgt, cRef) # Return the motion vector
 
 

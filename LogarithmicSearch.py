@@ -35,7 +35,7 @@ def search_points(imTgt, imRef, ptO, ptC, N, S, store):
             sweight = w
             sidx = x
     if sidx == -1:
-        return ((S / 2) + (S & 1), ptC) # floor(S / 2)
+        return ((S / 2) + (S & 1), ptC) # ceil(S / 2)
     return (S, points[sidx])
 
 
@@ -77,7 +77,7 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S, store):
             sweight = w
             sidx = x
     if sidx == -1:
-        return ((S / 2) + (S & 1), ptC) # floor(S / 2)
+        return ((S / 2) + (S & 1), ptC) # ceil(S / 2)
     return (S, points[sidx])
 
 

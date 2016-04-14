@@ -3,7 +3,6 @@ from PIL import Image
 
 import sys
 import math
-import Compressor.Colors
 
 def usage():
     print("Usage: %s image1.jpg image2.jpg out.bmp" % (sys.argv[0],))

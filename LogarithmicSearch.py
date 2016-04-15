@@ -1,15 +1,8 @@
 from PIL import Image
 from . import MAD
-
-def xMAD(N, ptO, ptR, imTgt, imRef):
-    return MAD.MAD_img(N, ptO, MAD.uleft(ptR, N), imTgt, imRef)
+from . import Util
 
 
-def xMAD2(N, ptO, ptR, imTgt, imRef):
-    return MAD.MAD_img(N, ptO, MAD.uleft2(ptR, N), imTgt, imRef)
-
-
-# TODO: Factor in edges of image
 def search_points(imTgt, imRef, ptO, ptC, N, S, store):
     (center_i, center_j) = ptC
     points = [
@@ -23,12 +16,14 @@ def search_points(imTgt, imRef, ptO, ptC, N, S, store):
 
     sweight = store.get(ptC, default=None)
     if sweight is None:
-        sweight = xMAD(N, ptOL, ptC, imTgt, imRef)
+        sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
         store[ptC] = sweight
     for x in range(len(points)):
+        if Util.detectOOB(imTgt.size, points[x], N):
+            continue
         w = store.get(points[x], default=None)
         if w is None:
-            w = xMAD(N, ptOL, points[x], imTgt, imRef)
+            w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
             store[points[x]] = w
         # Check if minimum
         if w < sweight:
@@ -49,7 +44,6 @@ def LS2D_odd(imTgt, imRef, md_i, md_j, N, S):
     return (cTgt, cRef) # Return the motion vector
 
 
-# TODO: Factor in edges of image
 def search_points2(imTgt, imRef, ptO, ptC, N, S, store):
     # Center is the upper left of a 2x2 block of pixels
     s = S - 2
@@ -65,12 +59,14 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S, store):
 
     sweight = store.get(ptC, default=None)
     if sweight is None:
-        sweight = xMAD2(N, ptOL, ptC, imTgt, imRef)
+        sweight = Util.xMAD2(N, ptOL, ptC, imTgt, imRef)
         store[ptC] = sweight
     for x in range(len(points)):
+        if Util.detectOOB(imTgt.size, points[x], N):
+            continue
         w = store.get(points[x], default=None)
         if w is None:
-            w = xMAD2(N, ptOL, points[x], imTgt, imRef)
+            w = Util.xMAD2(N, ptOL, points[x], imTgt, imRef)
             store[points[x]] = w
         # Check if minimum
         if w < sweight:

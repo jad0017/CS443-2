@@ -1,12 +1,6 @@
 from PIL import Image
 from . import MAD
-
-def xMAD(N, ptO, ptR, imTgt, imRef):
-    return MAD.MAD_img(N, ptO, MAD.uleft(ptR, N), imTgt, imRef)
-
-
-def xMAD2(N, ptO, ptR, imTgt, imRef):
-    return MAD.MAD_img(N, ptO, MAD.uleft2(ptR, N), imTgt, imRef)
+from . import Util
 
 
 # TODO: Factor in edges of image
@@ -24,9 +18,11 @@ def search_points(imTgt, imRef, ptO, ptC, N, S):
     ]
     sidx = -1
     ptOL = MAD.uleft(ptO, N)
-    sweight = xMAD(N, ptOL, ptC, imTgt, imRef)
+    sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
     for x in range(len(points)):
-        w = xMAD(N, ptOL, points[x], imTgt, imRef)
+        if Util.dectOOB(imTgt.size, points[x], N):
+            continue
+        w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
         # Check if minimum
         if w < sweight:
             sweight = w
@@ -65,9 +61,11 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S):
     ]
     sidx = -1
     ptOL = MAD.uleft2(ptO, N)
-    sweight = xMAD2(N, ptOL, ptC, imTgt, imRef)
+    sweight = Util.xMAD2(N, ptOL, ptC, imTgt, imRef)
     for x in range(len(points)):
-        w = xMAD2(N, ptOL, points[x], imTgt, imRef)
+        if Util.dectOOB(imTgt.size, points[x], N):
+            continue
+        w = Util.xMAD2(N, ptOL, points[x], imTgt, imRef)
         # Check if minimum
         if w < sweight:
             sweight = w

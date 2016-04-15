@@ -1,5 +1,4 @@
 from PIL import Image
-from . import MAD
 from . import Util
 
 
@@ -17,10 +16,10 @@ def search_points(imTgt, imRef, ptO, ptC, N, S):
         (center_i + S, center_j + S), # SouthEast of the macro block
     ]
     sidx = -1
-    ptOL = MAD.uleft(ptO, N)
+    ptOL = Util.uleft_from_center(ptO, N)
     sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
     for x in range(len(points)):
-        if Util.dectOOB(imTgt.size, points[x], N):
+        if Util.detectOOB(imTgt.size, points[x], N):
             continue
         w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
         # Check if minimum
@@ -60,12 +59,12 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S):
         (center_i + s + 1, center_j + s + 1), # SouthEast of the macro block
     ]
     sidx = -1
-    ptOL = MAD.uleft2(ptO, N)
-    sweight = Util.xMAD2(N, ptOL, ptC, imTgt, imRef)
+    ptOL = Util.uleft_from_center(ptO, N)
+    sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
     for x in range(len(points)):
-        if Util.dectOOB(imTgt.size, points[x], N):
+        if Util.detectOOB(imTgt.size, points[x], N):
             continue
-        w = Util.xMAD2(N, ptOL, points[x], imTgt, imRef)
+        w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
         # Check if minimum
         if w < sweight:
             sweight = w

@@ -30,37 +30,4 @@ def MAD_img(N, ptC, ptR, C, R):
     return float(d) / float(N * N)
 
 
-# Get the upper left pixel of an odd-edge length
-# block when given the center point.
-# [ - - - - - - - - - ]
-# [ - - - - - - - - - ]
-# [ - - - - - - - - - ]
-# [ - - - x x x - - - ]
-# [ - - - x C x - - - ]
-# [ - - - x x x - - - ]
-# [ - - - - - - - - - ]
-# [ - - - - - - - - - ]
-# [ - - - - - - - - - ]
-def uleft(pt, N):
-    Nd2 = N / 2
-    return (pt[0] - Nd2, pt[1] - Nd2)
-
-
-# Get the upper left pixel of an even-edge length
-# block when given the center point.
-# Note: The center point is the upper left of the
-# 2x2 center block
-# [ - - - - - - - - - - ]
-# [ - - - - - - - - - - ]
-# [ - - - - - - - - - - ]
-# [ - - - x x x x - - - ]
-# [ - - - x C c x - - - ]
-# [ - - - x c c x - - - ]
-# [ - - - x x x x - - - ]
-# [ - - - - - - - - - - ]
-# [ - - - - - - - - - - ]
-# [ - - - - - - - - - - ]
-def uleft2(pt, N):
-    Nd2 = (N / 2) - 1
-    return (pt[0] - Nd2, pt[1] - Nd2)
 

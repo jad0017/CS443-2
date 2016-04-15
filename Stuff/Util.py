@@ -28,12 +28,12 @@ from . import MAD
 # [ - - - - - - - - - - ]
 # [ - - - - - - - - - - ]
 def uleft_from_center(pt, N):
-    Nd2 = (N / 2) - int((N & 1) == 0)
+    Nd2 = (N // 2) - int((N & 1) == 0)
     return (pt[0] - Nd2, pt[1] - Nd2)
 
 
 def center_from_uleft(pt, N):
-    Nd2 = (N / 2) - int((N & 1) == 0)
+    Nd2 = (N // 2) - int((N & 1) == 0)
     return (pt[0] + Nd2, pt[1] + Nd2)
 
 

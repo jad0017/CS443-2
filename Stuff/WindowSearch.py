@@ -2,7 +2,6 @@ from PIL import Image
 from . import Util
 
 
-# TODO: Factor in edges of image
 def search_points(imTgt, imRef, ptO, ptC, N, S):
     (center_i, center_j) = ptC
     points = [
@@ -31,19 +30,17 @@ def search_points(imTgt, imRef, ptO, ptC, N, S):
     return points[sidx]
 
 
-def WS_odd(imTgt, imRef, md_i, md_j, N, S):
-    Nd2 = N / 2
-    cTgt = (md_i + Nd2, md_j + Nd2)
+def WS_odd(imTgt, imRef, ptTgt, N, S):
+    cTgt = Util.center_from_uleft(ptTgt, N)
     cRef = (cTgt[0], cTgt[1])
     while True:
-        cRef = search_points(imTgt, imRef, cTgt, CRef, N, S)
+        cRef = search_points(imTgt, imRef, cTgt, cRef, N, S)
         if S == 1:
             break
-        S = (S / 2) + (S & 1) # ceil(S / 2)
+        S = (S // 2) + (S & 1) # ceil(S / 2)
     return (cTgt, cRef) # Return the motion vector
 
 
-# TODO: Factor in edges of image
 def search_points2(imTgt, imRef, ptO, ptC, N, S):
     # Center is the upper left of a 2x2 block of pixels
     s = S - 2
@@ -71,19 +68,18 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S):
             sidx = x
     if sidx == -1:
         return ptC
-    return (S, points[sidx])
+    return points[sidx]
 
 
 
-def WS_even(imTgt, imRef, md_i, md_j, N, S):
-    Nd2 = (N / 2) - 1
-    cTgt = (md_i + Nd2, md_j + Nd2)
+def WS_even(imTgt, imRef, ptTgt, N, S):
+    cTgt = Util.center_from_uleft(ptTgt, N)
     cRef = (cTgt[0], cTgt[1])
     while True:
-        cRef = search_points2(imTgt, imRef, cTgt, CRef, N, S)
+        cRef = search_points2(imTgt, imRef, cTgt, cRef, N, S)
         if S == 1:
             break
-        S = (S / 2) + (S & 1) # ceil(S / 2)
+        S = (S // 2) + (S & 1) # ceil(S / 2)
     return (cTgt, cRef) # Return the motion vector
 
 
@@ -97,6 +93,6 @@ def WindowSearch(imTgt, imRef, ptTgt, N, S=8):
     # in that case.
 
     if (N & 1) == 1:
-        return WS_odd(imTgt, imRef, ptTgt[0], ptTgt[1], N, S)
-    return WS_even(imTgt, imRef, ptTgt[0], ptTgt[1], N, S)
+        return WS_odd(imTgt, imRef, ptTgt, N, S)
+    return WS_even(imTgt, imRef, ptTgt, N, S)
 

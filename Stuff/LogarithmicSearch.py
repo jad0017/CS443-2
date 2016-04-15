@@ -13,14 +13,14 @@ def search_points(imTgt, imRef, ptO, ptC, N, S, store):
     sidx = -1
     ptOL = Util.uleft_from_center(ptO, N)
 
-    sweight = store.get(ptC, default=None)
+    sweight = store.get(ptC, None)
     if sweight is None:
         sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
         store[ptC] = sweight
     for x in range(len(points)):
         if Util.detectOOB(imTgt.size, points[x], N):
             continue
-        w = store.get(points[x], default=None)
+        w = store.get(points[x], None)
         if w is None:
             w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
             store[points[x]] = w
@@ -29,17 +29,16 @@ def search_points(imTgt, imRef, ptO, ptC, N, S, store):
             sweight = w
             sidx = x
     if sidx == -1:
-        return ((S / 2) + (S & 1), ptC) # ceil(S / 2)
+        return ((S // 2) + (S & 1), ptC) # ceil(S / 2)
     return (S, points[sidx])
 
 
-def LS2D_odd(imTgt, imRef, md_i, md_j, N, S):
-    Nd2 = N / 2
-    cTgt = (md_i + Nd2, md_j + Nd2)
+def LS2D_odd(imTgt, imRef, ptTgt, N, S):
+    cTgt = Util.center_from_uleft(ptTgt, N)
     cRef = (cTgt[0], cTgt[1])
     store = dict()
     while S != 1:
-        (S, cRef) = search_points(imTgt, imRef, cTgt, CRef, N, S, store)
+        (S, cRef) = search_points(imTgt, imRef, cTgt, cRef, N, S, store)
     return (cTgt, cRef) # Return the motion vector
 
 
@@ -56,14 +55,14 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S, store):
     sidx = -1
     ptOL = Util.uleft_from_center(ptO, N)
 
-    sweight = store.get(ptC, default=None)
+    sweight = store.get(ptC, None)
     if sweight is None:
         sweight = Util.xMAD(N, ptOL, ptC, imTgt, imRef)
         store[ptC] = sweight
     for x in range(len(points)):
         if Util.detectOOB(imTgt.size, points[x], N):
             continue
-        w = store.get(points[x], default=None)
+        w = store.get(points[x], None)
         if w is None:
             w = Util.xMAD(N, ptOL, points[x], imTgt, imRef)
             store[points[x]] = w
@@ -72,18 +71,17 @@ def search_points2(imTgt, imRef, ptO, ptC, N, S, store):
             sweight = w
             sidx = x
     if sidx == -1:
-        return ((S / 2) + (S & 1), ptC) # ceil(S / 2)
+        return ((S // 2) + (S & 1), ptC) # ceil(S / 2)
     return (S, points[sidx])
 
 
 
-def LS2D_even(imTgt, imRef, md_i, md_j, N, S):
-    Nd2 = (N / 2) - 1
-    cTgt = (md_i + Nd2, md_j + Nd2)
+def LS2D_even(imTgt, imRef, ptTgt, N, S):
+    cTgt = Util.center_from_uleft(ptTgt, N)
     cRef = (cTgt[0], cTgt[1])
     store = dict()
     while S != 1:
-        (S, cRef) = search_points2(imTgt, imRef, cTgt, CRef, N, S, store)
+        (S, cRef) = search_points2(imTgt, imRef, cTgt, cRef, N, S, store)
     return (cTgt, cRef) # Return the motion vector
 
 
@@ -97,6 +95,6 @@ def LogarithmicSearch2D(imTgt, imRef, ptTgt, N, S=8):
     # in that case.
 
     if (N & 1) == 1:
-        return LS2D_odd(imTgt, imRef, ptTgt[0], ptTgt[1], N, S)
-    return LS2D_even(imTgt, imRef, ptTgt[0], ptTgt[1], N, S)
+        return LS2D_odd(imTgt, imRef, ptTgt, N, S)
+    return LS2D_even(imTgt, imRef, ptTgt, N, S)
 

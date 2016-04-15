@@ -19,11 +19,11 @@ def MAD_rel(C, R):
 def MAD_img(N, ptC, ptR, C, R):
     d = 0
     for i in range(N):
-        C_i = i + ptC[0]
-        R_i = i + ptR[0]
+        C_i = i + ptC[1]
+        R_i = i + ptR[1]
         for j in range(N):
-            C_j = j + ptC[1]
-            R_j = j + ptR[1]
+            C_j = j + ptC[0]
+            R_j = j + ptR[0]
             Cpx = C.getpixel((C_i, C_j))
             Rpx = R.getpixel((R_i, R_j))
             d += idiff(Cpx, Rpx)

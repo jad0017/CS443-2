@@ -11,28 +11,12 @@ from PIL import Image
 
 import sys
 import getopt
-from . import Matrix
+from Stuff import Matrix
+from Stuff import WindowSearch
+from Stuff import LogarithmicSearch
+from Stuff import Util
 
 import pickle
-
-def test_image_mode(img):
-    mode = img.mode
-    if mode == '1':
-        print("Unsupported Image Mode: 1-bit(black and white)")
-        sys.exit(1)
-    elif mode == 'L':
-        return True
-    elif mode == 'RGB':
-        return False
-    elif mode == 'RGBA':
-        print("Unsupported Image Mode: RGBA")
-        sys.exit(1)
-    elif mode == 'P':
-        print("Unsupported Image Mode: Palette")
-        sys.exit(1)
-    print("Unsupported Image Mode:", mode)
-    sys.exit(1)
-
 
 def get_block(pixels, xbp, ybp, N):
     (xoff, xlen) = xbp
@@ -44,97 +28,71 @@ def get_block(pixels, xbp, ybp, N):
             M[yo][xo] = pixels[xoff + xo, y]
     return M
 
-def put_block(img, xbp, ybp, N, M):
+def put_block(im, xbp, ybp, N, M):
     (xoff, xlen) = xbp
     (yoff, ylen) = ybp
     for yo in range(ylen):
         y = yoff + yo
         for xo in range(xlen):
-            img.putpixel((xoff + xo, y), M[yo][xo])
+            im.putpixel((xoff + xo, y), M[yo][xo])
 
 
-def block_image(img, N=8, p=4):
-    (width, height) = img.size
-
-    width_mod = width % N
+def block_image(imTgt, imRef, N, p, search_fn):
+    (width, height) = imTgt.size
     width_blocks = width // N
-    width_bp = (width - width_mod, width_mod)
-
-    height_mod = height % N
     height_blocks = height // N
-    height_bp = (height - height_mod, height_mod)
-
-    window_edge = (2 * p) + 1
 
     #
     # The gist of this:
     #
     #  Loop over y blocks:
     #    Loop over x blocks.
-    #    Loop over x overflow block.
-    #  Loop over y overflow block:
-    #    Loop over x blocks.
-    #    Loop over x overflow block.
+    #    Ignore x overflow.
+    #  Ignore y overflow.
     #
-    # This is probably the ugliest thing I've written in a long time.
-    #
-
-    pixels = img.load()
+    print('[')
     for yb in range(height_blocks):
         yoff = yb * N
-        ybp = (yoff, N)
         for xb in range(width_blocks):
-            M = get_block(pixels, (xb * N, N), ybp, N)
-            process_block(img, M)
-            put_block(img, (xb * N, N), ybp, N, M)
-        # Address partial width block
-        if width_mod != 0:
-            M = get_block(pixels, width_bp, ybp, N)
-			process_block(img, M)
-            put_block(img, width_bp, ybp, N, M)
-    # Address parital height block
-    if height_mod != 0:
-        for xb in range(width_blocks):
-            M = get_block(pixels, (xb * N, N), height_bp, N)
-			process_block(img, M)
-			put_block(img, (xb * N, N), height_bp, N, M)
-        # Address lower right block if partial height and partial width
-        if width_mod != 0:
-            M = get_block(pixels, width_bp, height_bp, N)
-			process_block(img, M)
-            put_block(img, width_bp, height_bp, N, M)
+            process_block(imTgt, imRef, (yoff, xb * N), N, p, search_fn)
+        # Skip partial width blocks?
+    # Skip partial height blocks?
+    print(']')
     return True
 
 
-
-def process_block(oimg, M):
-    # Single Channel: Luminance
-    #D = DCT.DCT(M)
-    #add_dct_block(D)
-    #C = Quantize.quantize(D, Quantize.QBASE_LUM)
-    #R = RLC.RLC(C)
-    #oimg.write_block_rlc(R)
+def process_block(imTgt, imRef, pt, N, p, search_fn):
+    motion_vector = search_fn(imTgt, imRef, pt, N, (p // 2) + (p & 1))
+    print(motion_vector, ',')
 
 
-infile = None
+tgtfile = None
+reffile = None
 outfile = None
 
-if len(args) < 1:
+def usage():
+    pass
+
+if len(sys.argv) < 3:
     print("Missing arguments!")
     usage()
     sys.exit(1)
-elif len(args) > 1:
+elif len(sys.argv) > 3:
     print("Too many arguments!")
     usage()
     sys.exit(1)
 
-infile = args[0]
-#outfile = args[1]
+tgtfile = sys.argv[1]
+reffile = sys.argv[2]
+#outfile = sys.argv[3]
 
-img = Image.open(infile)
-if not test_image_mode(img):
-    img = img.convert('L') # Grayscale
+imTgt = Image.open(tgtfile)
+if imTgt.mode != 'L':
+    imTgt = imTgt.convert('L') # Grayscale
+imRef = Image.open(reffile)
+if imRef.mode != 'L':
+    imRef = imRef.convert('L')
 
-block_image(img, N=16, p=7)
+block_image(imTgt, imRef, 16, 7, LogarithmicSearch.LogarithmicSearch2D)
 
 sys.exit(0)

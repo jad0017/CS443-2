@@ -93,6 +93,6 @@ imRef = Image.open(reffile)
 if imRef.mode != 'L':
     imRef = imRef.convert('L')
 
-block_image(imTgt, imRef, 16, 7, LogarithmicSearch.LogarithmicSearch2D)
+block_image(imTgt, imRef, 16, 7, WindowSearch.WindowSearch)
 
 sys.exit(0)

@@ -3,6 +3,12 @@ from PIL import Image, ImageDraw
 import sys
 from Stuff import Util
 
+def die_usage(s = None):
+    if s is not None:
+        print(s)
+    print("Usage: %s <image> <motion vector list> <outfile> [N]"
+    sys.exit(1)
+
 
 def copy_block(ipixels, oimg, orig, dest, N):
     (oul_y, oul_x) = Util.uleft_from_center(orig, N)
@@ -30,10 +36,21 @@ def readfile(infile, vectorfile, outfile, N):
     oimg.save(outfile, 'BMP')
 
 if len(sys.argv) < 4:
-    print("Too few arguments!")
-    sys.exit(1)
-if len(sys.argv) > 4:
-    print("Too many arguments!")
-    sys.exit(1)
+    die_usage("Too few arguments!")
+if len(sys.argv) > 5:
+    die_usage("Too many arguments!")
 
-readfile(sys.argv[1], sys.argv[2], sys.argv[3], 16)
+infile = sys.argv[1]
+vectorfile = sys.argv[2]
+outfile = sys.argv[3]
+
+if len(sys.argv) == 5:
+    try:
+        N = int(sys.argv[4])
+    except ValueError:
+        die_usage("N is not an integer!")
+else:
+    N = 16
+
+readfile(infile, vectorfile, outfile, N)
+sys.exit(0)

@@ -1,5 +1,6 @@
 # The PIL python library is required to run this script.
 from PIL import Image, ImageDraw
+import sys
 
 
 def die_usage(s=None):

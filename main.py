@@ -25,12 +25,12 @@ def usage():
     print("""\
 
 Options:
-  --logarithmic-search  Use the 2D Logarithmic Search Block-matching algorithm
-  --sequential-search   Use the Sequential Search Block-matching algorithm
-                        (default)
-  --window-search       Use the Window Search Block-matching algorithm
-  -N <val>             Set N (default: 16)
-  -p <val>             Set p (default: 7)
+  -L, --logarithmic-search  Use the 2D Logarithmic Search Block-matching algorithm
+  -S, --sequential-search   Use the Sequential Search Block-matching algorithm
+                            (default)
+  -W, --window-search       Use the Window Search Block-matching algorithm
+  -N <val>                  Set N (default: 16)
+  -p <val>                  Set p (default: 7)
 """)
 
 
@@ -71,13 +71,13 @@ def block_image(imTgt, imRef, outfile, N, p, search_fn):
             process_block(imTgt, imRef, (yoff, xb * N), N, p, search_fn, out)
         # Skip partial width blocks?
     # Skip partial height blocks?
-    out.write(']')
+    out.write(']\n')
     return True
 
 
 def process_block(imTgt, imRef, pt, N, p, search_fn, out):
     motion_vector = search_fn(imTgt, imRef, pt, N, (p // 2) + (p & 1))
-    out.write(str(motion_vector) + ',')
+    out.write(str(motion_vector) + ',\n')
 
 
 def window_search(imTgt, imRef, pt, N, p):
@@ -117,7 +117,7 @@ def test_pos_int(x, s):
 try:
     longopts=["help", "sequential-search", "logarithmic-search",
               "window-search"]
-    opts, args = getopt.gnu_getopt(sys.argv[1:], "hN:p:", longopts)
+    opts, args = getopt.gnu_getopt(sys.argv[1:], "hLSWN:p:", longopts)
 except getopt.GetoptError as err:
     die_usage(str(err))
 
@@ -125,15 +125,15 @@ for o,a in opts:
     if o in ("-h", "--help"):
         usage()
         sys.exit(0)
-    elif o == "--sequential-search":
+    elif o in ("-S", "--sequential-search"):
         if alg is not None:
             die_usage("Only one search type may be given!")
         alg = sequential_search
-    elif o == "--logarithmic-search":
+    elif o in ("-L", "--logarithmic-search"):
         if alg is not None:
             die_usage("Only one search type may be given!")
         alg = logarithmic_search
-    elif o == "--window-search":
+    elif o in ("-W", "--window-search"):
         if alg is not None:
             die_usage("Only one search type may be given!")
         alg = window_search
@@ -168,5 +168,5 @@ if N is None:
 if p is None:
     p = 7
 
-block_image(imTgt, imRef, N, p, alg)
+block_image(imTgt, imRef, outfile, N, p, alg)
 sys.exit(0)

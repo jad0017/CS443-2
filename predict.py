@@ -6,7 +6,7 @@ from Stuff import Util
 def die_usage(s = None):
     if s is not None:
         print(s)
-    print("Usage: %s <image> <motion vector list> <outfile> [N]"
+    print("Usage: %s <image> <motion vector list> <outfile> [N]")
     sys.exit(1)
 
 
